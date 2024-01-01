@@ -3,7 +3,9 @@
 MAKE=make
 
 all:
-	(cd server && $(MAKE)) && (cd client && $(MAKE))
+	$(MAKE) -C server
+	$(MAKE) -C client
 
 clean:
-	(cd server && $(MAKE) clean) && (cd client && $(MAKE) clean)
+	$(MAKE) clean -C server
+	$(MAKE) clean -C client
