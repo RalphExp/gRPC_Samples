@@ -7,6 +7,9 @@ Welcome to the resource repository of the book "gRPC - Up and Running".
 
 All the samples of this repository require to have the accompanying book [gRPC Up and Running](https://www.amazon.com/gRPC-Running-Building-Applications-Kubernetes/dp/1492058335/). Each sample is based on a real-world use case and details of the use case can be found in the respective chapter of the book. 
 
+## Environment
+Go Version: 1.20
+GRPC Version: 1.32
 
 ## Don't have _gRPC Up and Running_ book yet? 
 
