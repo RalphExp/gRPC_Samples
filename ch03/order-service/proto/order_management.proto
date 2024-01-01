@@ -2,6 +2,8 @@ syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
 
+option go_package = "./ecommerce";
+
 package ecommerce;
 
 service OrderManagement {
