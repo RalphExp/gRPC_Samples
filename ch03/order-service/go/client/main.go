@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	pb "ordermgt/client/ecommerce"
 	"time"
 
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/grpc"
 )
 
@@ -31,96 +33,118 @@ func main() {
 		log.Print("AddOrder Response -> ", res.Value)
 	}
 
-	// // Get Order
-	// retrievedOrder , err := client.GetOrder(ctx, &wrapper.StringValue{Value: "106"})
-	// log.Print("GetOrder Response -> : ", retrievedOrder)
+	// Get Order
+	retrievedOrder, _ := client.GetOrder(ctx, &wrappers.StringValue{Value: "106"})
+	log.Print("GetOrder Response -> : ", retrievedOrder)
 
-	// // Search Order : Server streaming scenario
-	// searchStream, 	_ := client.SearchOrders(ctx, &wrapper.StringValue{Value: "Google"})
-	// for {
-	// 	searchOrder, err := searchStream.Recv()
-	// 	if err == io.EOF {
-	// 		log.Print("EOF")
-	// 		break
-	// 	}
+	// Get Order (not existed)
+	retrievedOrder, _ = client.GetOrder(ctx, &wrappers.StringValue{Value: "107"})
+	log.Print("GetOrder Response -> : ", retrievedOrder)
 
-	// 	if err == nil {
-	// 		log.Print("Search Result : ", searchOrder)
-	// 	}
-	// }
+	// ============================================
+	// Search Order : Server streaming scenario
+	// ============================================
+	// 102, 104
+	searchStream, _ := client.SearchOrders(ctx, &wrappers.StringValue{Value: "Google"})
+	for {
+		searchOrder, err := searchStream.Recv()
+		if err == io.EOF {
+			log.Print("EOF: search ended")
+			break
+		}
+		if err == nil {
+			log.Print("Search Result : ", searchOrder)
+		}
+	}
 
-	// // =========================================
-	// // Update Orders : Client streaming scenario
-	// updOrder1 := pb.Order{Id: "102", Items:[]string{"Google Pixel 3A", "Google Pixel Book"}, Destination:"Mountain View, CA", Price:1100.00}
-	// updOrder2 := pb.Order{Id: "103", Items:[]string{"Apple Watch S4", "Mac Book Pro", "iPad Pro"}, Destination:"San Jose, CA", Price:2800.00}
-	// updOrder3 := pb.Order{Id: "104", Items:[]string{"Google Home Mini", "Google Nest Hub", "iPad Mini"}, Destination:"Mountain View, CA", Price:2200.00}
+	// ============================================
+	// Update Orders : Client streaming scenario
+	// ============================================
+	updOrder1 := pb.Order{
+		Id:          "102",
+		Items:       []string{"Google Pixel 3A", "Google Pixel Book"},
+		Destination: "Mountain View, CA",
+		Price:       1100.00}
 
-	// updateStream, err := client.UpdateOrders(ctx)
+	updOrder2 := pb.Order{
+		Id:          "103",
+		Items:       []string{"Apple Watch S4", "Mac Book Pro", "iPad Pro"},
+		Destination: "San Jose, CA",
+		Price:       2800.00}
 
-	// if err != nil {
-	// 	log.Fatalf("%v.UpdateOrders(_) = _, %v", client, err)
-	// }
+	updOrder3 := pb.Order{
+		Id:          "104",
+		Items:       []string{"Google Home Mini", "Google Nest Hub", "iPad Mini"},
+		Destination: "Mountain View, CA",
+		Price:       2200.00}
 
-	// // Updating order 1
-	// if err := updateStream.Send(&updOrder1); err != nil {
-	// 	log.Fatalf("%v.Send(%v) = %v", updateStream, updOrder1, err)
-	// }
+	updateStream, err := client.UpdateOrders(ctx)
 
-	// // Updating order 2
-	// if err := updateStream.Send(&updOrder2); err != nil {
-	// 	log.Fatalf("%v.Send(%v) = %v", updateStream, updOrder2, err)
-	// }
+	if err != nil {
+		log.Fatalf("%v.UpdateOrders(_) = _, %v", client, err)
+	}
 
-	// // Updating order 3
-	// if err := updateStream.Send(&updOrder3); err != nil {
-	// 	log.Fatalf("%v.Send(%v) = %v", updateStream, updOrder3, err)
-	// }
+	// Updating order 1
+	if err := updateStream.Send(&updOrder1); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", updateStream, updOrder1.String(), err)
+	}
 
-	// updateRes, err := updateStream.CloseAndRecv()
-	// if err != nil {
-	// 	log.Fatalf("%v.CloseAndRecv() got error %v, want %v", updateStream, err, nil)
-	// }
-	// log.Printf("Update Orders Res : %s", updateRes)
+	// Updating order 2
+	if err := updateStream.Send(&updOrder2); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", updateStream, updOrder2.String(), err)
+	}
 
-	// // =========================================
-	// // Process Order : Bi-di streaming scenario
-	// streamProcOrder, err := client.ProcessOrders(ctx)
-	// if err != nil {
-	// 	log.Fatalf("%v.ProcessOrders(_) = _, %v", client, err)
-	// }
+	// Updating order 3
+	if err := updateStream.Send(&updOrder3); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", updateStream, updOrder3.String(), err)
+	}
 
-	// if err := streamProcOrder.Send(&wrapper.StringValue{Value:"102"}); err != nil {
-	// 	log.Fatalf("%v.Send(%v) = %v", client, "102", err)
-	// }
+	updateRes, err := updateStream.CloseAndRecv()
+	if err != nil {
+		log.Fatalf("%v.CloseAndRecv() got error %v, want %v", updateStream, err, nil)
+	}
+	log.Printf("Update Orders Res : %s", updateRes)
 
-	// if err := streamProcOrder.Send(&wrapper.StringValue{Value:"103"}); err != nil {
-	// 	log.Fatalf("%v.Send(%v) = %v", client, "103", err)
-	// }
+	// ============================================
+	// Process Order : Bi-di streaming scenario
+	// ============================================
+	streamProcOrder, err := client.ProcessOrders(ctx)
+	if err != nil {
+		log.Fatalf("%v.ProcessOrders(_) = _, %v", client, err)
+	}
 
-	// if err := streamProcOrder.Send(&wrapper.StringValue{Value:"104"}); err != nil {
-	// 	log.Fatalf("%v.Send(%v) = %v", client, "104", err)
-	// }
+	if err := streamProcOrder.Send(&wrappers.StringValue{Value: "102"}); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", client, "102", err)
+	}
 
-	// channel := make(chan struct{})
-	// go asncClientBidirectionalRPC(streamProcOrder, channel)
-	// time.Sleep(time.Millisecond * 1000)
+	if err := streamProcOrder.Send(&wrappers.StringValue{Value: "103"}); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", client, "103", err)
+	}
 
-	// if err := streamProcOrder.Send(&wrapper.StringValue{Value:"101"}); err != nil {
-	// 	log.Fatalf("%v.Send(%v) = %v", client, "101", err)
-	// }
-	// if err := streamProcOrder.CloseSend(); err != nil {
-	// 	log.Fatal(err)
-	// }
-	// channel <- struct{}{}
+	if err := streamProcOrder.Send(&wrappers.StringValue{Value: "104"}); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", client, "104", err)
+	}
+
+	channel := make(chan struct{})
+	go asncClientBidirectionalRPC(streamProcOrder, channel)
+	time.Sleep(time.Millisecond * 1000)
+
+	if err := streamProcOrder.Send(&wrappers.StringValue{Value: "101"}); err != nil {
+		log.Fatalf("%v.Send(%v) = %v", client, "101", err)
+	}
+	if err := streamProcOrder.CloseSend(); err != nil {
+		log.Fatal(err)
+	}
+	channel <- struct{}{}
 }
 
-//func asncClientBidirectionalRPC(streamProcOrder pb.OrderManagement_ProcessOrdersClient, c chan struct{}) {
-//	for {
-//		combinedShipment, errProcOrder := streamProcOrder.Recv()
-//		if errProcOrder == io.EOF {
-//			break
-//		}
-//		log.Printf("Combined shipment : ", combinedShipment.OrdersList)
-//	}
-//	<-c
-//}
+func asncClientBidirectionalRPC(streamProcOrder pb.OrderManagement_ProcessOrdersClient, c chan struct{}) {
+	for {
+		combinedShipment, errProcOrder := streamProcOrder.Recv()
+		if errProcOrder == io.EOF {
+			break
+		}
+		log.Printf("Combined shipment : %v", combinedShipment.OrdersList)
+	}
+	<-c
+}
