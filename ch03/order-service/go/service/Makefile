@@ -1,6 +1,6 @@
 all: server
 
-server:
+server: main.go
 	protoc -I ../../proto --go_out=. --go-grpc_out=require_unimplemented_servers=false:. ../../proto/order_management.proto	
 	go build -v -o server
 
