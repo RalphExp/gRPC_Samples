@@ -1,8 +1,6 @@
 module productinfo/server
 
-go 1.21
-
-toolchain go1.21.5
+go 1.18
 
 require (
 	github.com/gofrs/uuid v3.2.0+incompatible
