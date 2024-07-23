@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+option go_package = "./ecommerce";
+
 import "google/protobuf/wrappers.proto";
 
 package ecommerce;

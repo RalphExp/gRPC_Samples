@@ -2,16 +2,17 @@ package main
 
 import (
 	"context"
-	"github.com/golang/protobuf/ptypes/wrappers"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"io"
 	"log"
 	"net"
+	pb "productinfo/server/ecommerce"
 	"strings"
 	"time"
+
+	"github.com/golang/protobuf/ptypes/wrappers"
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -28,7 +29,7 @@ type server struct {
 // Simple RPC
 func (s *server) AddOrder(ctx context.Context, orderReq *pb.Order) (*wrappers.StringValue, error) {
 	orderMap[orderReq.Id] = *orderReq
-	log.Println("Order : ",  orderReq.Id, " -> Added")
+	log.Println("Order : ", orderReq.Id, " -> Added")
 	return &wrapper.StringValue{Value: "Order Added: " + orderReq.Id}, nil
 }
 
@@ -45,7 +46,7 @@ func (s *server) SearchOrders(searchQuery *wrappers.StringValue, stream pb.Order
 		for _, itemStr := range order.Items {
 			if strings.Contains(itemStr, searchQuery.Value) {
 				// Send the matching orders in a stream
-				log.Print("Matching Order Found : " + key, " -> Writing Order to the stream ... ")
+				log.Print("Matching Order Found : "+key, " -> Writing Order to the stream ... ")
 				stream.Send(&order)
 				break
 			}
@@ -104,7 +105,7 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 			shipment.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = shipment
 		} else {
-			comShip := pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!", }
+			comShip := pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!"}
 			ord := orderMap[orderId.GetValue()]
 			comShip.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = comShip
@@ -113,7 +114,7 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 
 		if batchMarker == orderBatchSize {
 			for _, comb := range combinedShipmentMap {
-				log.Print("Shipping : " , comb.Id, " -> ", len(comb.OrdersList))
+				log.Print("Shipping : ", comb.Id, " -> ", len(comb.OrdersList))
 				stream.Send(&comb)
 			}
 			batchMarker = 0
@@ -124,14 +125,13 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 	}
 }
 
-
 // Server :: Unary Interceptor
-func orderUnaryServerInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+func orderUnaryServerInterceptor(ctx context.Context, req interface{},
+	info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	// Pre-processing logic
 	// Gets info about the current RPC call by examining the args passed in
 	log.Println("======= [Server Interceptor] ", info.FullMethod)
 	log.Printf(" Pre Proc Message : %s", req)
-
 
 	// Invoking the handler to complete the normal execution of a unary RPC.
 	m, err := handler(ctx, req)
@@ -140,7 +140,6 @@ func orderUnaryServerInterceptor(ctx context.Context, req interface{}, info *grp
 	log.Printf(" Post Proc Message : %s", m)
 	return m, err
 }
-
 
 // wrappedStream wraps around the embedded grpc.ServerStream, and intercepts the RecvMsg and
 // SendMsg method call.
@@ -161,7 +160,6 @@ func (w *wrappedStream) SendMsg(m interface{}) error {
 func newWrappedStream(s grpc.ServerStream) grpc.ServerStream {
 	return &wrappedStream{s}
 }
-
 
 func orderServerStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	// Pre-processing
@@ -193,9 +191,29 @@ func main() {
 }
 
 func initSampleData() {
-	orderMap["102"] = pb.Order{Id: "102", Items: []string{"Google Pixel 3A", "Mac Book Pro"}, Destination: "Mountain View, CA", Price: 1800.00}
-	orderMap["103"] = pb.Order{Id: "103", Items: []string{"Apple Watch S4"}, Destination: "San Jose, CA", Price: 400.00}
-	orderMap["104"] = pb.Order{Id: "104", Items: []string{"Google Home Mini", "Google Nest Hub"}, Destination: "Mountain View, CA", Price: 400.00}
-	orderMap["105"] = pb.Order{Id: "105", Items: []string{"Amazon Echo"}, Destination: "San Jose, CA", Price: 30.00}
-	orderMap["106"] = pb.Order{Id: "106", Items: []string{"Amazon Echo", "Apple iPhone XS"}, Destination: "Mountain View, CA", Price: 30.00}
+	orderMap["102"] = pb.Order{
+		Id:          "102",
+		Items:       []string{"Google Pixel 3A", "Mac Book Pro"},
+		Destination: "Mountain View, CA",
+		Price:       1800.00}
+	orderMap["103"] = pb.Order{
+		Id:          "103",
+		Items:       []string{"Apple Watch S4"},
+		Destination: "San Jose, CA",
+		Price:       400.00}
+	orderMap["104"] = pb.Order{
+		Id:          "104",
+		Items:       []string{"Google Home Mini", "Google Nest Hub"},
+		Destination: "Mountain View, CA",
+		Price:       400.00}
+	orderMap["105"] = pb.Order{
+		Id:          "105",
+		Items:       []string{"Amazon Echo"},
+		Destination: "San Jose, CA",
+		Price:       30.00}
+	orderMap["106"] = pb.Order{
+		Id:          "106",
+		Items:       []string{"Amazon Echo", "Apple iPhone XS"},
+		Destination: "Mountain View, CA",
+		Price:       30.00}
 }

@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	"google.golang.org/grpc"
 	"io"
 	"log"
+	pb "productinfo/client/ecommerce"
 	"time"
+
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -28,16 +29,13 @@ func main() {
 	defer cancel()
 
 	// Add Order
-	order1 := pb.Order{Id: "101", Items:[]string{"iPhone XS", "Mac Book Pro"}, Destination:"San Jose, CA", Price:2300.00}
+	order1 := pb.Order{Id: "101", Items: []string{"iPhone XS", "Mac Book Pro"}, Destination: "San Jose, CA", Price: 2300.00}
 	res, _ := c.AddOrder(ctx, &order1)
 	log.Print("AddOrder Response -> ", res.Value)
-
-
 
 	// Get Order
 	//retrievedOrder , err := c.GetOrder(ctx, &wrapper.StringValue{Value: "106"})
 	//log.Print("GetOrder Response -> : ", retrievedOrder)
-
 
 	// Search Order
 	searchStream, _ := c.SearchOrders(ctx, &wrapper.StringValue{Value: "Google"})
@@ -52,7 +50,6 @@ func main() {
 			log.Print("Search Result : ", searchOrder)
 		}
 	}
-
 
 	// Update Orders
 
@@ -86,7 +83,7 @@ func main() {
 	//<- channel
 }
 
-func asncClientBidirectionalRPC (streamProcOrder pb.OrderManagement_ProcessOrdersClient, c chan bool) {
+func asncClientBidirectionalRPC(streamProcOrder pb.OrderManagement_ProcessOrdersClient, c chan bool) {
 	for {
 		combinedShipment, errProcOrder := streamProcOrder.Recv()
 		if errProcOrder == io.EOF {
@@ -96,7 +93,6 @@ func asncClientBidirectionalRPC (streamProcOrder pb.OrderManagement_ProcessOrder
 	}
 	c <- true
 }
-
 
 func orderUnaryClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 	// Pre-processor phase
@@ -110,10 +106,6 @@ func orderUnaryClientInterceptor(ctx context.Context, method string, req, reply 
 
 	return err
 }
-
-
-
-
 
 func clientStreamInterceptor(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 
@@ -142,36 +134,3 @@ func (w *wrappedStream) SendMsg(m interface{}) error {
 func newWrappedStream(s grpc.ClientStream) grpc.ClientStream {
 	return &wrappedStream{s}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
