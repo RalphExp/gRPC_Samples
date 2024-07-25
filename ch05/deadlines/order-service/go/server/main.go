@@ -2,16 +2,17 @@ package main
 
 import (
 	"context"
-	"github.com/golang/protobuf/ptypes/wrappers"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
 	"io"
 	"log"
 	"net"
+	pb "productinfo/server/ecommerce"
 	"strings"
 	"time"
+
+	"github.com/golang/protobuf/ptypes/wrappers"
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 const (
@@ -29,8 +30,8 @@ type server struct {
 func (s *server) AddOrder(ctx context.Context, orderReq *pb.Order) (*wrappers.StringValue, error) {
 	orderMap[orderReq.Id] = *orderReq
 
-	sleepDuration  := 5
-	log.Println("Sleeping for :",  sleepDuration, "s")
+	sleepDuration := 5
+	log.Println("Sleeping for :", sleepDuration, "s")
 
 	time.Sleep(time.Duration(sleepDuration) * time.Second)
 
@@ -39,7 +40,7 @@ func (s *server) AddOrder(ctx context.Context, orderReq *pb.Order) (*wrappers.St
 		return nil, ctx.Err()
 	}
 
-	log.Println("Order : ",  orderReq.Id, " -> Added")
+	log.Println("Order : ", orderReq.Id, " -> Added")
 	return &wrapper.StringValue{Value: "Order Added: " + orderReq.Id}, nil
 }
 
@@ -50,13 +51,14 @@ func (s *server) GetOrder(ctx context.Context, orderId *wrapper.StringValue) (*p
 }
 
 // Server-side Streaming RPC
-func (s *server) SearchOrders(searchQuery *wrappers.StringValue, stream pb.OrderManagement_SearchOrdersServer) error {
+func (s *server) SearchOrders(searchQuery *wrappers.StringValue,
+	stream pb.OrderManagement_SearchOrdersServer) error {
 
 	for key, order := range orderMap {
 		for _, itemStr := range order.Items {
 			if strings.Contains(itemStr, searchQuery.Value) {
 				// Send the matching orders in a stream
-				log.Print("Matching Order Found : " + key, " -> Writing Order to the stream ... ")
+				log.Print("Matching Order Found : "+key, " -> Writing Order to the stream ... ")
 				stream.Send(&order)
 				break
 			}
@@ -116,7 +118,7 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 			shipment.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = shipment
 		} else {
-			comShip := pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!", }
+			comShip := pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!"}
 			ord := orderMap[orderId.GetValue()]
 			comShip.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = comShip
@@ -125,7 +127,7 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 
 		if batchMarker == orderBatchSize {
 			for _, comb := range combinedShipmentMap {
-				log.Print("Shipping : " , comb.Id, " -> ", len(comb.OrdersList))
+				log.Print("Shipping : ", comb.Id, " -> ", len(comb.OrdersList))
 				stream.Send(&comb)
 			}
 			batchMarker = 0

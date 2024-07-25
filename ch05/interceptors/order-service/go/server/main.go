@@ -40,7 +40,8 @@ func (s *server) GetOrder(ctx context.Context, orderId *wrapper.StringValue) (*p
 }
 
 // Server-side Streaming RPC
-func (s *server) SearchOrders(searchQuery *wrappers.StringValue, stream pb.OrderManagement_SearchOrdersServer) error {
+func (s *server) SearchOrders(searchQuery *wrappers.StringValue,
+	stream pb.OrderManagement_SearchOrdersServer) error {
 
 	for key, order := range orderMap {
 		for _, itemStr := range order.Items {
@@ -161,7 +162,8 @@ func newWrappedStream(s grpc.ServerStream) grpc.ServerStream {
 	return &wrappedStream{s}
 }
 
-func orderServerStreamInterceptor(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+func orderServerStreamInterceptor(srv interface{},
+	ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 	// Pre-processing
 	log.Println("====== [Server Stream Interceptor] ", info.FullMethod)
 

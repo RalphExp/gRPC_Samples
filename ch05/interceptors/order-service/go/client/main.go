@@ -83,7 +83,8 @@ func main() {
 	//<- channel
 }
 
-func asncClientBidirectionalRPC(streamProcOrder pb.OrderManagement_ProcessOrdersClient, c chan bool) {
+func asncClientBidirectionalRPC(streamProcOrder pb.OrderManagement_ProcessOrdersClient,
+	c chan bool) {
 	for {
 		combinedShipment, errProcOrder := streamProcOrder.Recv()
 		if errProcOrder == io.EOF {
@@ -94,7 +95,10 @@ func asncClientBidirectionalRPC(streamProcOrder pb.OrderManagement_ProcessOrders
 	c <- true
 }
 
-func orderUnaryClientInterceptor(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+func orderUnaryClientInterceptor(ctx context.Context, method string,
+	req, reply interface{}, cc *grpc.ClientConn,
+	invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+
 	// Pre-processor phase
 	log.Println("Method : " + method)
 
@@ -107,7 +111,9 @@ func orderUnaryClientInterceptor(ctx context.Context, method string, req, reply 
 	return err
 }
 
-func clientStreamInterceptor(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+func clientStreamInterceptor(ctx context.Context, desc *grpc.StreamDesc,
+	cc *grpc.ClientConn, method string,
+	streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 
 	log.Println("======= [Client Interceptor] ", method)
 	s, err := streamer(ctx, desc, cc, method, opts...)
