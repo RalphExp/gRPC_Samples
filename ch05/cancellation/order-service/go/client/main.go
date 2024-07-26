@@ -2,12 +2,13 @@ package main
 
 import (
 	"context"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
-	"google.golang.org/grpc"
 	"io"
 	"log"
+	pb "productinfo/client/ecommerce"
 	"time"
+
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -38,11 +39,10 @@ func main() {
 	//	log.Print("AddOrder Response -> ", res.Value)
 	//}
 
-
 	//log.Println("Cancelling context... ")
 	//cancel()
 
-	// Following RPC calls should fail because the RPC context is already cancelled. 
+	// Following RPC calls should fail because the RPC context is already cancelled.
 
 	// Get Order
 	//retrievedOrder , getOrderErr := client.GetOrder(ctx, &wrapper.StringValue{Value: "106"})
@@ -52,9 +52,6 @@ func main() {
 	//} else {
 	//	log.Print("GetOrder Response -> : ", retrievedOrder)
 	//}
-
-
-
 
 	// Search Order
 	//searchStream, _ := client.SearchOrders(ctx, &wrapper.StringValue{Value: "Google"})
@@ -69,7 +66,6 @@ func main() {
 	//		log.Print("Search Result : ", searchOrder)
 	//	}
 	//}
-
 
 	// Update Orders
 
@@ -88,9 +84,9 @@ func main() {
 
 	// Process Order
 	streamProcOrder, _ := client.ProcessOrders(ctx)
-	_ = streamProcOrder.Send(&wrapper.StringValue{Value:"102"})
-	_ = streamProcOrder.Send(&wrapper.StringValue{Value:"103"})
-	_ = streamProcOrder.Send(&wrapper.StringValue{Value:"104"})
+	_ = streamProcOrder.Send(&wrapper.StringValue{Value: "102"})
+	_ = streamProcOrder.Send(&wrapper.StringValue{Value: "103"})
+	_ = streamProcOrder.Send(&wrapper.StringValue{Value: "104"})
 
 	channel := make(chan bool, 1)
 
@@ -101,15 +97,14 @@ func main() {
 	cancel()
 	log.Printf("RPC Status : %s", ctx.Err())
 
-	_ = streamProcOrder.Send(&wrapper.StringValue{Value:"101"})
+	_ = streamProcOrder.Send(&wrapper.StringValue{Value: "101"})
 	_ = streamProcOrder.CloseSend()
 
-	<- channel
+	<-channel
 
 }
 
-
-func asncClientBidirectionalRPC (streamProcOrder pb.OrderManagement_ProcessOrdersClient, c chan bool) {
+func asncClientBidirectionalRPC(streamProcOrder pb.OrderManagement_ProcessOrdersClient, c chan bool) {
 	for {
 		combinedShipment, errProcOrder := streamProcOrder.Recv()
 		if errProcOrder != nil {
@@ -124,40 +119,3 @@ func asncClientBidirectionalRPC (streamProcOrder pb.OrderManagement_ProcessOrder
 	}
 	c <- true
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

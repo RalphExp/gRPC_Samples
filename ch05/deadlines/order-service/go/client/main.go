@@ -28,7 +28,11 @@ func main() {
 	defer cancel()
 
 	// Add Order
-	order1 := pb.Order{Id: "101", Items: []string{"iPhone XS", "Mac Book Pro"}, Destination: "San Jose, CA", Price: 2300.00}
+	order1 := pb.Order{
+		Id:          "101",
+		Items:       []string{"iPhone XS", "Mac Book Pro"},
+		Destination: "San Jose, CA",
+		Price:       2300.00}
 	res, addErr := client.AddOrder(ctx, &order1)
 
 	if addErr != nil {
