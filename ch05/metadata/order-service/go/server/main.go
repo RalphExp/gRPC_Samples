@@ -3,19 +3,20 @@ package main
 import (
 	"context"
 	"fmt"
+	"io"
+	"log"
+	"net"
+	pb "productinfo/server/ecommerce"
+	"strings"
+	"time"
+
 	"github.com/golang/protobuf/ptypes/wrappers"
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch05/interceptors/order-service/go/order-service-gen"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
-	"io"
-	"log"
-	"net"
-	"strings"
-	"time"
 )
 
 const (
@@ -32,8 +33,7 @@ type server struct {
 // Simple RPC
 func (s *server) AddOrder(ctx context.Context, orderReq *pb.Order) (*wrappers.StringValue, error) {
 	orderMap[orderReq.Id] = *orderReq
-	log.Println("Order : ",  orderReq.Id, " -> Added")
-
+	log.Println("Order : ", orderReq.Id, " -> Added")
 
 	// ***** Reading Metadata from Client *****
 	md, metadataAvailable := metadata.FromIncomingContext(ctx)
@@ -75,7 +75,7 @@ func (s *server) SearchOrders(searchQuery *wrappers.StringValue, stream pb.Order
 		for _, itemStr := range order.Items {
 			if strings.Contains(itemStr, searchQuery.Value) {
 				// Send the matching orders in a stream
-				log.Print("Matching Order Found : " + key, " -> Writing Order to the stream ... ")
+				log.Print("Matching Order Found : "+key, " -> Writing Order to the stream ... ")
 				stream.Send(&order)
 				break
 			}
@@ -135,7 +135,7 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 			shipment.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = shipment
 		} else {
-			comShip := pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!", }
+			comShip := pb.CombinedShipment{Id: "cmb - " + (orderMap[orderId.GetValue()].Destination), Status: "Processed!"}
 			ord := orderMap[orderId.GetValue()]
 			comShip.OrdersList = append(shipment.OrdersList, &ord)
 			combinedShipmentMap[destination] = comShip
@@ -144,7 +144,7 @@ func (s *server) ProcessOrders(stream pb.OrderManagement_ProcessOrdersServer) er
 
 		if batchMarker == orderBatchSize {
 			for _, comb := range combinedShipmentMap {
-				log.Print("Shipping : " , comb.Id, " -> ", len(comb.OrdersList))
+				log.Print("Shipping : ", comb.Id, " -> ", len(comb.OrdersList))
 				stream.Send(&comb)
 			}
 			batchMarker = 0
