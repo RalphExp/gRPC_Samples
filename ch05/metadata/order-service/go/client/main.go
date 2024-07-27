@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	pb "productinfo/client/ecommerce"
 	"time"
 
@@ -32,23 +33,32 @@ func main() {
 
 	// ****** Metadata : Creation *****
 
+	// timestamp list
 	md := metadata.Pairs(
 		"timestamp", time.Now().Format(time.StampNano),
 		"kn", "vn",
+		"timestamp", time.Now().Format(time.StampNano),
 	)
 	mdCtx := metadata.NewOutgoingContext(context.Background(), md)
-
 	ctxA := metadata.AppendToOutgoingContext(mdCtx, "k1", "v1", "k1", "v2", "k2", "v3")
 
 	// RPC using the context with new metadata.
 	var header, trailer metadata.MD
 
 	// RPC: Add Order
-	order1 := pb.Order{Id: "101", Items: []string{"iPhone XS", "Mac Book Pro"}, Destination: "San Jose, CA", Price: 2300.00}
-	res, _ := client.AddOrder(ctxA, &order1, grpc.Header(&header), grpc.Trailer(&trailer))
+	order1 := pb.Order{
+		Id:          "101",
+		Items:       []string{"iPhone XS", "Mac Book Pro"},
+		Destination: "San Jose, CA",
+		Price:       2300.00}
 
-	log.Print("AddOrder Response -> ", res.Value)
-
+	res, err := client.AddOrder(ctxA, &order1, grpc.Header(&header), grpc.Trailer(&trailer))
+	if err != nil {
+		log.Print(err.Error())
+		os.Exit(1)
+	} else {
+		log.Print("AddOrder Response -> ", res.Value)
+	}
 	// Reading the headers
 	if t, ok := header["timestamp"]; ok {
 		log.Printf("timestamp from header:\n")
@@ -58,6 +68,7 @@ func main() {
 	} else {
 		log.Fatal("timestamp expected but doesn't exist in header")
 	}
+
 	if l, ok := header["location"]; ok {
 		log.Printf("location from header:\n")
 		for i, e := range l {
@@ -75,23 +86,33 @@ func main() {
 			log.Print("EOF")
 			break
 		}
-
 		if err == nil {
 			log.Print("Search Result : ", searchOrder)
 		}
 	}
 
 	// Update Orders
-	updOrder1 := pb.Order{Id: "102", Items: []string{"Google Pixel 3A", "Google Pixel Book"}, Destination: "Mountain View, CA", Price: 1100.00}
-	updOrder2 := pb.Order{Id: "103", Items: []string{"Apple Watch S4", "Mac Book Pro", "iPad Pro"}, Destination: "San Jose, CA", Price: 2800.00}
-	updOrder3 := pb.Order{Id: "104", Items: []string{"Google Home Mini", "Google Nest Hub", "iPad Mini"}, Destination: "Mountain View, CA", Price: 2200.00}
+	updOrder1 := pb.Order{
+		Id:          "102",
+		Items:       []string{"Google Pixel 3A", "Google Pixel Book"},
+		Destination: "Mountain View, CA",
+		Price:       1100.00}
+	updOrder2 := pb.Order{
+		Id:          "103",
+		Items:       []string{"Apple Watch S4", "Mac Book Pro", "iPad Pro"},
+		Destination: "San Jose, CA",
+		Price:       2800.00}
+	updOrder3 := pb.Order{
+		Id:          "104",
+		Items:       []string{"Google Home Mini", "Google Nest Hub", "iPad Mini"},
+		Destination: "Mountain View, CA",
+		Price:       2200.00}
 
 	updateStream, _ := client.UpdateOrders(mdCtx)
-
 	_ = updateStream.Send(&updOrder1)
 	_ = updateStream.Send(&updOrder2)
 	_ = updateStream.Send(&updOrder3)
 
 	updateRes, _ := updateStream.CloseAndRecv()
-	log.Printf("Update Orders Res : ", updateRes)
+	log.Printf("Update Orders Res: %s\n", updateRes)
 }

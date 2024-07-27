@@ -38,7 +38,8 @@ func (s *server) AddOrder(ctx context.Context, orderReq *pb.Order) (*wrappers.St
 	// ***** Reading Metadata from Client *****
 	md, metadataAvailable := metadata.FromIncomingContext(ctx)
 	if !metadataAvailable {
-		return nil, status.Errorf(codes.DataLoss, "UnaryEcho: failed to get metadata")
+		return nil, status.Errorf(codes.DataLoss,
+			"UnaryEcho: failed to get metadata")
 	}
 	if t, ok := md["timestamp"]; ok {
 		fmt.Printf("timestamp from metadata:\n")
@@ -48,7 +49,8 @@ func (s *server) AddOrder(ctx context.Context, orderReq *pb.Order) (*wrappers.St
 	}
 
 	// Creating and sending a header.
-	header := metadata.New(map[string]string{"location": "San Jose", "timestamp": time.Now().Format(time.StampNano)})
+	header := metadata.New(map[string]string{
+		"location": "San Jose", "timestamp": time.Now().Format(time.StampNano)})
 	grpc.SendHeader(ctx, header)
 
 	return &wrapper.StringValue{Value: "Order Added: " + orderReq.Id}, nil
@@ -88,7 +90,7 @@ func (s *server) SearchOrders(searchQuery *wrappers.StringValue, stream pb.Order
 // Client-side Streaming RPC
 func (s *server) UpdateOrders(stream pb.OrderManagement_UpdateOrdersServer) error {
 
-	ordersStr := "Updated Order IDs : "
+	ordersStr := "Updated Order IDs :"
 	for {
 		order, err := stream.Recv()
 		if err == io.EOF {
@@ -98,7 +100,7 @@ func (s *server) UpdateOrders(stream pb.OrderManagement_UpdateOrdersServer) erro
 		// Update order
 		orderMap[order.Id] = *order
 
-		log.Printf("Order ID ", order.Id, ": Updated")
+		log.Printf("Order ID %s %s\n", order.Id, ":Updated")
 		ordersStr += order.Id + ", "
 	}
 }
@@ -171,9 +173,29 @@ func main() {
 }
 
 func initSampleData() {
-	orderMap["102"] = pb.Order{Id: "102", Items: []string{"Google Pixel 3A", "Mac Book Pro"}, Destination: "Mountain View, CA", Price: 1800.00}
-	orderMap["103"] = pb.Order{Id: "103", Items: []string{"Apple Watch S4"}, Destination: "San Jose, CA", Price: 400.00}
-	orderMap["104"] = pb.Order{Id: "104", Items: []string{"Google Home Mini", "Google Nest Hub"}, Destination: "Mountain View, CA", Price: 400.00}
-	orderMap["105"] = pb.Order{Id: "105", Items: []string{"Amazon Echo"}, Destination: "San Jose, CA", Price: 30.00}
-	orderMap["106"] = pb.Order{Id: "106", Items: []string{"Amazon Echo", "Apple iPhone XS"}, Destination: "Mountain View, CA", Price: 30.00}
+	orderMap["102"] = pb.Order{
+		Id:          "102",
+		Items:       []string{"Google Pixel 3A", "Mac Book Pro"},
+		Destination: "Mountain View, CA",
+		Price:       1800.00}
+	orderMap["103"] = pb.Order{
+		Id:          "103",
+		Items:       []string{"Apple Watch S4"},
+		Destination: "San Jose, CA",
+		Price:       400.00}
+	orderMap["104"] = pb.Order{
+		Id:          "104",
+		Items:       []string{"Google Home Mini", "Google Nest Hub"},
+		Destination: "Mountain View, CA",
+		Price:       400.00}
+	orderMap["105"] = pb.Order{
+		Id:          "105",
+		Items:       []string{"Amazon Echo"},
+		Destination: "San Jose, CA",
+		Price:       30.00}
+	orderMap["106"] = pb.Order{
+		Id:          "106",
+		Items:       []string{"Amazon Echo", "Apple iPhone XS"},
+		Destination: "Mountain View, CA",
+		Price:       30.00}
 }
