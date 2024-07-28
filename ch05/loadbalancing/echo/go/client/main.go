@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/rand"
 	"time"
 
 	"google.golang.org/grpc"
@@ -98,6 +99,7 @@ func (r *exampleResolver) start() {
 	for i, s := range addrStrs {
 		addrs[i] = resolver.Address{Addr: s}
 	}
+	rand.Shuffle(len(addrs), func(i, j int) { addrs[i], addrs[j] = addrs[j], addrs[i] })
 	r.cc.UpdateState(resolver.State{Addresses: addrs})
 }
 func (*exampleResolver) ResolveNow(o resolver.ResolveNowOptions) {}
