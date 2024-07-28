@@ -9,6 +9,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/examples/features/proto/echo"
 	ecpb "google.golang.org/grpc/examples/features/proto/echo"
 	"google.golang.org/grpc/status"
 )
@@ -18,6 +19,7 @@ var (
 )
 
 type ecServer struct {
+	echo.EchoServer
 	addr string
 }
 

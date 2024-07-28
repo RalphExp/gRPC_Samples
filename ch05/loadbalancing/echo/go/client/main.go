@@ -37,8 +37,10 @@ func makeRPCs(cc *grpc.ClientConn, n int) {
 
 func main() {
 	pickfirstConn, err := grpc.Dial(
-		fmt.Sprintf("%s:///%s", exampleScheme, exampleServiceName), // "example:///lb.example.grpc.io"
-		// grpc.WithBalancerName("pick_first"), // "pick_first" is the default, so this DialOption is not necessary.
+		fmt.Sprintf("%s:///%s", exampleScheme, exampleServiceName),
+		// "example:///lb.example.grpc.io"
+		// grpc.WithBalancerName("pick_first"),
+		// "pick_first" is the default, so this DialOption is not necessary.
 		grpc.WithInsecure(),
 	)
 	if err != nil {
@@ -52,7 +54,7 @@ func main() {
 	// Make another ClientConn with round_robin policy.
 	roundrobinConn, err := grpc.Dial(
 		fmt.Sprintf("%s:///%s", exampleScheme, exampleServiceName), // // "example:///lb.example.grpc.io"
-		grpc.WithBalancerName("round_robin"), // This sets the initial balancing policy.
+		// grpc.WithBalancerName("round_robin"),                       // This sets the initial balancing policy.
 		grpc.WithInsecure(),
 	)
 	if err != nil {
@@ -68,7 +70,10 @@ func main() {
 
 type exampleResolverBuilder struct{}
 
-func (*exampleResolverBuilder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOption) (resolver.Resolver, error) {
+func (*exampleResolverBuilder) Build(target resolver.Target,
+	cc resolver.ClientConn,
+	opts resolver.BuildOptions) (resolver.Resolver, error) {
+
 	r := &exampleResolver{
 		target: target,
 		cc:     cc,
@@ -88,15 +93,15 @@ type exampleResolver struct {
 }
 
 func (r *exampleResolver) start() {
-	addrStrs := r.addrsStore[r.target.Endpoint]
+	addrStrs := r.addrsStore[r.target.Endpoint()]
 	addrs := make([]resolver.Address, len(addrStrs))
 	for i, s := range addrStrs {
 		addrs[i] = resolver.Address{Addr: s}
 	}
 	r.cc.UpdateState(resolver.State{Addresses: addrs})
 }
-func (*exampleResolver) ResolveNow(o resolver.ResolveNowOption) {}
-func (*exampleResolver) Close()                                 {}
+func (*exampleResolver) ResolveNow(o resolver.ResolveNowOptions) {}
+func (*exampleResolver) Close()                                  {}
 
 func init() {
 	resolver.Register(&exampleResolverBuilder{})
