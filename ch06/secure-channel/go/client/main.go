@@ -17,7 +17,7 @@ import (
 var (
 	address  = "localhost:50051"
 	hostname = "localhost"
-	crtFile  = filepath.Join("..", "..", "..", "secure-channel", "certs", "server.crt")
+	crtFile  = filepath.Join("..", "..", "..", "secure-channel", "certs2", "server.crt")
 )
 
 func main() {
@@ -54,5 +54,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not get product: %v", err)
 	}
-	log.Printf("Product: ", product.String())
+	log.Printf("Product: %s", product.String())
 }

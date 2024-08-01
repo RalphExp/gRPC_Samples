@@ -17,8 +17,8 @@ import (
 
 var (
 	port    = ":50051"
-	crtFile = filepath.Join("..", "..", "..", "secure-channel", "certs", "server.crt")
-	keyFile = filepath.Join("..", "..", "..", "secure-channel", "certs", "server.key")
+	crtFile = filepath.Join("..", "..", "..", "secure-channel", "certs2", "server.crt")
+	keyFile = filepath.Join("..", "..", "..", "secure-channel", "certs2", "server.key")
 )
 
 // server is used to implement ecommerce/product_info.
