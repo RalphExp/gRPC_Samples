@@ -53,8 +53,8 @@ func (s *server) GetProduct(ctx context.Context, in *wrapper.StringValue) (*pb.P
 var (
 	port    = ":50051"
 	crtFile = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "server.crt")
-	keyFile = filepath.Join("..", "..", "..", "ch06", "mutual-tls-channel", "certs", "server.key")
-	caFile  = filepath.Join("..", "..", "..", "ch06", "mutual-tls-channel", "certs", "ca.crt")
+	keyFile = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "server.key")
+	caFile  = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "ca.crt")
 )
 
 func main() {
