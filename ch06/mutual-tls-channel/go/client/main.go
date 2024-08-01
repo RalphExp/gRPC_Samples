@@ -25,9 +25,9 @@ import (
 var (
 	address  = "localhost:50051"
 	hostname = "localhost"
-	crtFile  = filepath.Join("ch06", "mutual-tls-channel", "certs", "client.crt")
-	keyFile  = filepath.Join("ch06", "mutual-tls-channel", "certs", "client.key")
-	caFile   = filepath.Join("ch06", "mutual-tls-channel", "certs", "ca.crt")
+	crtFile  = filepath.Join("..", "..", "mutual-tls-channel", "certs", "client.crt")
+	keyFile  = filepath.Join("..", "..", "mutual-tls-channel", "certs", "client.key")
+	caFile   = filepath.Join("..", "..", "mutual-tls-channel", "certs", "ca.crt")
 )
 
 func main() {
