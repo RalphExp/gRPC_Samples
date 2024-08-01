@@ -9,20 +9,21 @@ import (
 	"context"
 	"crypto/tls"
 	"errors"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"log"
 	"net"
 	"path/filepath"
+	pb "productinfo/server/ecommerce"
+
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
+	"github.com/google/uuid"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
-const (
-	port = ":50051"
-	crtFile = filepath.Join("ch06", "secure-channel", "certs", "server.crt")
-	keyFile = filepath.Join("ch06", "secure-channel", "certs", "server.key")
+var (
+	port    = ":50051"
+	crtFile = filepath.Join("..", "..", "..", "secure-channel", "certs", "server.crt")
+	keyFile = filepath.Join("..", "..", "..", "secure-channel", "certs", "server.key")
 )
 
 // server is used to implement ecommerce/product_info.

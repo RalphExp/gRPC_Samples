@@ -7,20 +7,22 @@ package main
 
 import (
 	"context"
-	"google.golang.org/grpc/credentials"
 	"log"
 	"path/filepath"
 	"time"
 
+	"google.golang.org/grpc/credentials"
+
+	pb "productinfo/client/ecommerce"
+
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/proto"
 	"google.golang.org/grpc"
 )
 
-const (
-	address = "localhost:50051"
+var (
+	address  = "localhost:50051"
 	hostname = "localhost"
-	crtFile = filepath.Join("ch06", "secure-channel", "certs", "server.crt")
+	crtFile  = filepath.Join("..", "..", "..", "secure-channel", "certs", "server.crt")
 )
 
 func main() {
