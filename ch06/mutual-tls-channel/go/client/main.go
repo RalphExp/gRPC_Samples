@@ -9,23 +9,25 @@ import (
 	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"google.golang.org/grpc/credentials"
 	"io/ioutil"
 	"log"
 	"path/filepath"
 	"time"
 
+	"google.golang.org/grpc/credentials"
+
+	pb "productinfo/client/ecommerce"
+
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/proto"
 	"google.golang.org/grpc"
 )
 
 var (
-	address = "localhost:50051"
+	address  = "localhost:50051"
 	hostname = "localhost"
-	crtFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "client.crt")
-	keyFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "client.key")
-	caFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "ca.crt")
+	crtFile  = filepath.Join("ch06", "mutual-tls-channel", "certs", "client.crt")
+	keyFile  = filepath.Join("ch06", "mutual-tls-channel", "certs", "client.key")
+	caFile   = filepath.Join("ch06", "mutual-tls-channel", "certs", "ca.crt")
 )
 
 func main() {
@@ -49,7 +51,7 @@ func main() {
 
 	opts := []grpc.DialOption{
 		// transport credentials.
-		grpc.WithTransportCredentials( credentials.NewTLS(&tls.Config{
+		grpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
 			ServerName:   hostname, // NOTE: this is required!
 			Certificates: []tls.Certificate{certificate},
 			RootCAs:      certPool,

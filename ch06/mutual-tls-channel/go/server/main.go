@@ -10,15 +10,16 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"errors"
-	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 	"io/ioutil"
 	"log"
 	"net"
 	"path/filepath"
+	pb "productinfo/server/ecommerce"
+
+	wrapper "github.com/golang/protobuf/ptypes/wrappers"
+	"github.com/google/uuid"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 // server is used to implement ecommerce/product_info.
@@ -50,10 +51,10 @@ func (s *server) GetProduct(ctx context.Context, in *wrapper.StringValue) (*pb.P
 }
 
 var (
-	port = ":50051"
-    crtFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "server.crt")
-    keyFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "server.key")
-    caFile = filepath.Join("ch06", "mutual-tls-channel", "certs", "ca.crt")
+	port    = ":50051"
+	crtFile = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "server.crt")
+	keyFile = filepath.Join("..", "..", "..", "ch06", "mutual-tls-channel", "certs", "server.key")
+	caFile  = filepath.Join("..", "..", "..", "ch06", "mutual-tls-channel", "certs", "ca.crt")
 )
 
 func main() {
@@ -76,12 +77,12 @@ func main() {
 
 	opts := []grpc.ServerOption{
 		// Enable TLS for all incoming connections.
-		grpc.Creds(    // Create the TLS credentials
-			credentials.NewTLS(&tls.Config {
+		grpc.Creds( // Create the TLS credentials
+			credentials.NewTLS(&tls.Config{
 				ClientAuth:   tls.RequireAndVerifyClientCert,
 				Certificates: []tls.Certificate{certificate},
 				ClientCAs:    certPool,
-				},
+			},
 			)),
 	}
 
