@@ -1,5 +1,5 @@
 # Generate private RSA key
-if [ ! -e server.key ]; then
+if [ ! -e "server.key" ]; then
 	openssl genrsa -out server.key 2048
 fi
 

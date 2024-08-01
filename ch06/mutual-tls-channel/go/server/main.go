@@ -1,8 +1,3 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
-// Execute go run go/server/main.go
-
 package main
 
 import (
@@ -52,9 +47,9 @@ func (s *server) GetProduct(ctx context.Context, in *wrapper.StringValue) (*pb.P
 
 var (
 	port    = ":50051"
-	crtFile = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "server.crt")
-	keyFile = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "server.key")
-	caFile  = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "ca.crt")
+	crtFile = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs2", "server.crt")
+	keyFile = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs2", "server.key")
+	caFile  = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs2", "ca.crt")
 )
 
 func main() {

@@ -1,8 +1,3 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/golang/product_info
-// Execute go run go/client/main.go
-
 package main
 
 import (
@@ -25,9 +20,9 @@ import (
 var (
 	address  = "localhost:50051"
 	hostname = "localhost"
-	crtFile  = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "client.crt")
-	keyFile  = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "client.key")
-	caFile   = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs", "ca.crt")
+	crtFile  = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs2", "client.crt")
+	keyFile  = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs2", "client.key")
+	caFile   = filepath.Join("..", "..", "..", "mutual-tls-channel", "certs2", "ca.crt")
 )
 
 func main() {
