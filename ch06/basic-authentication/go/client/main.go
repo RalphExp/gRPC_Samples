@@ -1,20 +1,17 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/golang/product_info
-// Execute go run go/client/main.go
-
 package main
 
 import (
 	"context"
 	"encoding/base64"
-	"google.golang.org/grpc/credentials"
 	"log"
 	"path/filepath"
 	"time"
 
+	"google.golang.org/grpc/credentials"
+
+	pb "productinfo/client/ecommerce"
+
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info"
 	"google.golang.org/grpc"
 )
 
@@ -24,7 +21,8 @@ const (
 
 func main() {
 
-	creds, err := credentials.NewClientTLSFromFile(filepath.Join("ch06", "secure-channel", "certs", "server.crt"),
+	creds, err := credentials.NewClientTLSFromFile(
+		filepath.Join("..", "..", "..", "secure-channel", "certs2", "server.crt"),
 		"localhost")
 	if err != nil {
 		log.Fatalf("failed to load credentials: %v", err)
@@ -63,7 +61,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not get product: %v", err)
 	}
-	log.Printf("Product: ", product.String())
+	log.Printf("Product: %s", product.String())
 }
 
 type basicAuth struct {

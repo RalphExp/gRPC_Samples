@@ -1,8 +1,3 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
-// Execute go run go/server/main.go
-
 package main
 
 import (
@@ -10,18 +5,20 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"errors"
+	"log"
+	"net"
+	"path/filepath"
+	"strings"
+
+	pb "productinfo/server/ecommerce"
+
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
-	"log"
-	"net"
-	"path/filepath"
-	"strings"
 )
 
 // server is used to implement ecommerce/product_info.
@@ -30,7 +27,7 @@ type server struct {
 }
 
 var (
-	port = ":50051"
+	port               = ":50051"
 	errMissingMetadata = status.Errorf(codes.InvalidArgument, "missing metadata")
 	errInvalidToken    = status.Errorf(codes.Unauthenticated, "invalid credentials")
 )
@@ -59,8 +56,9 @@ func (s *server) GetProduct(ctx context.Context, in *wrapper.StringValue) (*pb.P
 }
 
 func main() {
-	cert, err := tls.LoadX509KeyPair(filepath.Join("ch06", "secure-channel", "certs", "server.crt"),
-		filepath.Join("ch06", "secure-channel", "certs", "server.key"))
+	cert, err := tls.LoadX509KeyPair(
+		filepath.Join("..", "..", "..", "secure-channel", "certs2", "server.crt"),
+		filepath.Join("..", "..", "..", "secure-channel", "certs2", "server.key"))
 	if err != nil {
 		log.Fatalf("failed to load key pair: %s", err)
 	}
