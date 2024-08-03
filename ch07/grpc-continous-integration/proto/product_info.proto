@@ -2,6 +2,8 @@ syntax = "proto3";
 
 import "google/protobuf/wrappers.proto";
 
+option go_package = "./ecommerce";
+
 package ecommerce;
 
 service ProductInfo {
@@ -15,3 +17,7 @@ message Product {
     string description = 3;
     float price = 4;
 }
+
+// message ProductID {
+//    string value = 1;
+// }

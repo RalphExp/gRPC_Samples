@@ -1,0 +1,15 @@
+all: server
+
+server: main.go
+	@go mod tidy
+	protoc -I ../../proto --go_out=. --go-grpc_out=require_unimplemented_servers=false:. ../../proto/product_info.proto	
+	go build -v -o server
+
+test:
+	@echo "running test..."
+	@go test
+
+clean:
+	rm -rf ecommerce
+	rm -rf server
+

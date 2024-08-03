@@ -1,8 +1,3 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc -I proto-gen proto-gen/product_info.proto-gen --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
-// Execute go run go/server/main.go
-
 package main
 
 import (
@@ -11,9 +6,10 @@ import (
 	"log"
 	"net"
 
+	pb "productinfo/server/ecommerce"
+
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-docker/go/proto-gen"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
