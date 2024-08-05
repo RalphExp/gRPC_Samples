@@ -13,13 +13,14 @@ import (
 	"net"
 	"net/http"
 
+	pb "productinfo/server/ecommerce"
+
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-prometheus/go/proto"
-	"google.golang.org/grpc"
 	"github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -62,10 +63,10 @@ var (
 	// Create some standard server metrics.
 	grpcMetrics = grpc_prometheus.NewServerMetrics()
 
-    customizedCounterMetric = prometheus.NewCounterVec(prometheus.CounterOpts{
-        Name: "product_mgt_server_handle_count",
-        Help: "Total number of RPCs handled on the server.",
-    }, []string{"name"})
+	customizedCounterMetric = prometheus.NewCounterVec(prometheus.CounterOpts{
+		Name: "product_mgt_server_handle_count",
+		Help: "Total number of RPCs handled on the server.",
+	}, []string{"name"})
 )
 
 func init() {
@@ -89,8 +90,8 @@ func main() {
 	)
 
 	pb.RegisterProductInfoServer(grpcServer, &server{})
-    // Initialize all metrics.
-    grpcMetrics.InitializeMetrics(grpcServer)
+	// Initialize all metrics.
+	grpcMetrics.InitializeMetrics(grpcServer)
 
 	// Start your http server for prometheus.
 	go func() {
