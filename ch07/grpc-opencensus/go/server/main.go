@@ -12,14 +12,15 @@ import (
 	"net"
 	"net/http"
 
+	pb "productinfo/server/ecommerce"
+
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/uuid"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-prometheus/go/proto"
-	"google.golang.org/grpc"
+	"go.opencensus.io/examples/exporter"
 	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/zpages"
-	"go.opencensus.io/examples/exporter"
+	"google.golang.org/grpc"
 )
 
 const (
@@ -62,9 +63,9 @@ func main() {
 		log.Fatal(http.ListenAndServe("127.0.0.1:8081", mux))
 	}()
 
-    // Register stats and trace exporters to export
-    // the collected data.
-    view.RegisterExporter(&exporter.PrintExporter{})
+	// Register stats and trace exporters to export
+	// the collected data.
+	view.RegisterExporter(&exporter.PrintExporter{})
 
 	// Register the views to collect server request count.
 	if err := view.Register(ocgrpc.DefaultServerViews...); err != nil {

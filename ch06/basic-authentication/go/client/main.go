@@ -32,6 +32,10 @@ func main() {
 		password: "admin",
 	}
 	opts := []grpc.DialOption{
+		// func grpc.WithPerRPCCredentials(creds credentials.PerRPCCredentials) grpc.DialOption
+		// auth need to implement interface credentials.PerRPCCredentials
+		// which is GetRequestMetadata and RequireTransportSecurity
+
 		grpc.WithPerRPCCredentials(auth),
 		// transport credentials.
 		grpc.WithTransportCredentials(creds),
