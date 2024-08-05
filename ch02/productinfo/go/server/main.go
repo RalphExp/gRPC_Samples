@@ -1,8 +1,3 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc -I proto proto/product_info.proto --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
-// Execute go run go/server/main.go
-
 package main
 
 import (
@@ -10,8 +5,9 @@ import (
 	"log"
 	"net"
 
-	"github.com/gofrs/uuid"
 	pb "productinfo/server/ecommerce"
+
+	"github.com/gofrs/uuid"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -28,7 +24,7 @@ type server struct {
 
 // AddProduct implements ecommerce.AddProduct
 func (s *server) AddProduct(ctx context.Context,
-							in *pb.Product) (*pb.ProductID, error) {
+	in *pb.Product) (*pb.ProductID, error) {
 	out, err := uuid.NewV4()
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "Error while generating Product ID", err)

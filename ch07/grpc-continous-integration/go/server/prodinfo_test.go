@@ -2,26 +2,26 @@ package main
 
 import (
 	"context"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-docker/go/proto-gen"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/reflection"
-	"google.golang.org/grpc/test/bufconn"
 	"log"
 	"net"
 	"testing"
 	"time"
+
+	pb "productinfo/server/ecommerce"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 const (
 	address = "localhost:50051"
 	bufSize = 1024 * 1024
-
 )
 
 var listener *bufconn.Listener
 
-
-func initGRPCServerHTTP2() {
+func initGRPCServerHTTP2() *grpc.Server {
 	lis, err := net.Listen("tcp", port)
 
 	if err != nil {
@@ -36,6 +36,7 @@ func initGRPCServerHTTP2() {
 			log.Fatalf("failed to serve: %v", err)
 		}
 	}()
+	return s
 }
 
 func getBufDialer(listener *bufconn.Listener) func(context.Context, string) (net.Conn, error) {
@@ -44,9 +45,9 @@ func getBufDialer(listener *bufconn.Listener) func(context.Context, string) (net
 	}
 }
 
-
 // Initialization of BufConn.
-// Package bufconn provides a net.Conn implemented by a buffer and related dialing and listening functionality.
+// Package bufconn provides a net.Conn implemented by a buffer and
+// related dialing and listening functionality.
 func initGRPCServerBuffConn() {
 	listener = bufconn.Listen(bufSize)
 	s := grpc.NewServer()
@@ -61,10 +62,11 @@ func initGRPCServerBuffConn() {
 
 }
 
-
 // Conventional test that starts a gRPC server and client test the service with RPC
 func TestServer_AddProduct(t *testing.T) {
-	initGRPCServerHTTP2() // Starting a conventional gRPC server runs on HTTP2
+	s := initGRPCServerHTTP2() // Starting a conventional gRPC server runs on HTTP2
+	defer s.Stop()
+
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
@@ -84,7 +86,6 @@ func TestServer_AddProduct(t *testing.T) {
 	}
 	log.Printf("Res %s", r.Value)
 }
-
 
 // Test written using Buffconn
 func TestServer_AddProductBufConn(t *testing.T) {

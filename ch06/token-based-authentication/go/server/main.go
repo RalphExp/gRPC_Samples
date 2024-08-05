@@ -1,8 +1,3 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc --go_out=plugins=grpc:golang/product_info product_info.proto
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/go/product_info
-// Execute go run go/server/main.go
-
 package main
 
 import (

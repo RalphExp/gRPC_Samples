@@ -1,8 +1,3 @@
-// Go to ${grpc-up-and-running}/samples/ch02/productinfo
-// Optional: Execute protoc -I proto-gen proto-gen/product_info.proto-gen --go_out=plugins=grpc:go/product_info
-// Execute go get -v github.com/grpc-up-and-running/samples/ch02/productinfo/golang/product_info
-// Execute go run go/client/main.go
-
 package main
 
 import (
@@ -10,8 +5,9 @@ import (
 	"log"
 	"time"
 
+	pb "productinfo/client/ecommerce"
+
 	wrapper "github.com/golang/protobuf/ptypes/wrappers"
-	pb "github.com/grpc-up-and-running/samples/ch07/grpc-docker/go/proto-gen"
 	"google.golang.org/grpc"
 )
 
@@ -44,5 +40,5 @@ func main() {
 	if err != nil {
 		log.Fatalf("Could not get product: %v", err)
 	}
-	log.Printf("Product: ", product.String())
+	log.Printf("Product: %s", product.String())
 }
